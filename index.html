@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>New_Order // JAGUAR_PRODUCTION_SUPABASE</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome สำหรับไอคอน -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 สำหรับแจ้งเตือนแบบไฮเทค -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        :root {
+            --bg-dark: #030806;
+            --panel-bg: rgba(7, 24, 16, 0.9);
+            --border-neon: #00ff88;
+            --border-dim: #113a24;
+            --text-main: #e2f0ea;
+            --text-muted: #8ca89a;
+            --neon-green: #00ff88;
+            --neon-glow: rgba(0, 255, 136, 0.4);
+            --neon-yellow: #f5a623;
+            --neon-red: #ff3366;
+            --input-bg: #030806;
+            --table-bg: #071910;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Courier New', Courier, monospace;
+            min-height: 100vh;
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        /* ภาพพื้นหลังเครื่องครัวสแตนเลสจากัวร์ พร้อมฟิลเตอร์เขียวทึมไฮเทค */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(3, 8, 6, 0.95), rgba(5, 20, 12, 0.9)),
+                        url('https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80') no-repeat center center;
+            background-size: cover;
+            z-index: -1;
+            filter: brightness(0.35) contrast(1.2) hue-rotate(60deg);
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 950px;
+            background: var(--panel-bg);
+            border: 2px solid var(--border-neon);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 0 35px var(--neon-glow), inset 0 0 20px rgba(0, 255, 136, 0.1);
+            backdrop-filter: blur(10px);
+            box-sizing: border-box;
+            margin: 20px 0;
+        }
+
+        /* หัวฟอร์ม: โลโก้หัวเสือโลหะไฮเทค */
+        .app-header {
+            text-align: center;
+            border-bottom: 1px dashed var(--border-neon);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .jaguar-emblem {
+            width: 75px;
+            height: 75px;
+            margin: 0 auto 10px auto;
+            background: radial-gradient(circle, #113a24 0%, #030806 100%);
+            border: 2px solid var(--neon-green);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 15px var(--neon-glow);
+            animation: emblemPulse 3s infinite alternate;
+        }
+
+        .jaguar-emblem i {
+            font-size: 36px;
+            color: var(--neon-green);
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+
+        @keyframes emblemPulse {
+            0% { box-shadow: 0 0 10px rgba(0,255,136,0.3); }
+            100% { box-shadow: 0 0 25px rgba(0,255,136,0.7); }
+        }
+
+        .app-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--neon-green);
+            letter-spacing: 2px;
+            margin: 0;
+            text-transform: uppercase;
+            text-shadow: 0 0 8px var(--neon-glow);
+        }
+
+        .app-subtitle {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-top: 4px;
+            text-transform: uppercase;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-control-stock, .form-select-stock {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-dim);
+            color: var(--text-main);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            padding: 11px 14px;
+            font-family: 'Courier New', Courier, monospace;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .form-control-stock:focus, .form-select-stock:focus {
+            background-color: var(--input-bg);
+            color: #fff;
+            border-color: var(--neon-green);
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+            outline: none;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        /* ปุ่มกดสไตล์ตลาดหุ้น มีไฟและแสงเงาสวยงาม */
+        .stock-btn {
+            background: linear-gradient(145deg, #071910, #040e09);
+            border: 2px solid var(--neon-green);
+            color: var(--neon-green);
+            padding: 14px;
+            border-radius: 10px;
+            width: 100%;
+            font-weight: bold;
+            font-size: 0.95rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .stock-btn::after {
+            content: "";
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.3), transparent);
+            transition: 0.5s;
+        }
+
+        .stock-btn:hover::after {
+            left: 100%;
+        }
+
+        .stock-btn:hover {
+            background: var(--neon-green);
+            color: var(--bg-dark);
+            box-shadow: 0 0 25px var(--neon-glow);
+            transform: translateY(-2px);
+        }
+
+        .stock-btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-cancel-edit {
+            background: linear-gradient(145deg, #2a0a0f, #140305);
+            border: 2px solid var(--neon-red);
+            color: var(--neon-red);
+            margin-top: 8px;
+            display: none;
+        }
+        .btn-cancel-edit:hover {
+            background: var(--neon-red);
+            color: var(--bg-dark);
+            box-shadow: 0 0 25px rgba(255, 51, 102, 0.4);
+        }
+
+        /* ส่วนรายงานและตาราง */
+        .report-section {
+            margin-top: 35px;
+            border-top: 1px dashed var(--border-dim);
+            padding-top: 20px;
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .report-title {
+            color: var(--neon-green);
+            font-size: 1rem;
+            letter-spacing: 1px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .filter-box {
+            background: var(--table-bg);
+            border: 1px solid var(--border-dim);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            background: var(--table-bg);
+            border: 1px solid var(--border-dim);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        th, td {
+            padding: 10px 8px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-dim);
+        }
+
+        th {
+            color: var(--neon-green);
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        td {
+            color: var(--text-main);
+        }
+
+        tr:hover td {
+            background-color: rgba(0, 255, 136, 0.05);
+        }
+
+        .action-btn {
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            cursor: pointer;
+        }
+        .btn-edit-action { background: transparent; color: var(--neon-yellow); border: 1px solid var(--neon-yellow); margin-right: 4px; }
+        .btn-edit-action:hover { background: var(--neon-yellow); color: var(--bg-dark); }
+        .btn-del-action { background: transparent; color: var(--neon-red); border: 1px solid var(--neon-red); }
+        .btn-del-action:hover { background: var(--neon-red); color: var(--bg-dark); }
+
+        .terminal-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            border-top: 1px solid var(--border-dim);
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <!-- หัวฟอร์ม: โลโก้หัวเสือ (fa-paw) -->
+    <div class="app-header">
+        <div class="jaguar-emblem">
+            <i class="fa-solid fa-paw"></i>
+        </div>
+        <h1 class="app-title">New_Order</h1>
+        <div class="app-subtitle">JAGUAR PRODUCTION // ORDER CREATION & REPORT</div>
+    </div>
+
+    <!-- ฟอร์มสร้าง/แก้ไขใบสั่งใหม่ -->
+    <form id="orderForm" onsubmit="saveOrder(event)">
+        <input type="hidden" id="edit_id_order" value="">
+
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <label for="order_no">2. เลขที่ใบสั่ง (Order No)</label>
+                <input type="text" id="order_no" class="form-control-stock" placeholder="ระบุเลขที่ใบสั่ง..." required>
+            </div>
+            <div class="col-md-6 form-group">
+                <label for="po_no">3. เลขที่ PO (PO No)</label>
+                <input type="text" id="po_no" class="form-control-stock" placeholder="ระบุเลขที่ PO..." required>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <label for="id_work">4. รหัสชิ้นงาน (Smart Dropdown - เรียงจากน้อยไปมาก)</label>
+                <select id="id_work" class="form-select form-select-stock" required>
+                    <option value="">-- กำลังโหลดรหัสชิ้นงาน --</option>
+                </select>
+            </div>
+            <div class="col-md-6 form-group">
+                <label for="quantity">5. จำนวนผลิต (Quantity - int4)</label>
+                <input type="number" id="quantity" class="form-control-stock" placeholder="ระบุจำนวน..." min="1" required>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <label for="start_date">6. วันที่เริ่ม (Start Date)</label>
+                <input type="date" id="start_date" class="form-control-stock" required>
+            </div>
+            <div class="col-md-6 form-group">
+                <label for="end_date">7. วันที่กำหนดเสร็จ (End Date)</label>
+                <input type="date" id="end_date" class="form-control-stock" required>
+            </div>
+        </div>
+
+        <button type="submit" class="stock-btn" id="submitBtn">
+            <i class="fa-solid fa-floppy-disk me-2"></i> บันทึกใบสั่งใหม่ (SAVE)
+        </button>
+        <button type="button" class="stock-btn btn-cancel-edit" id="cancelEditBtn" onclick="cancelEditMode()">
+            <i class="fa-solid fa-xmark me-2"></i> ยกเลิกการแก้ไข (CANCEL)
+        </button>
+    </form>
+
+    <!-- ส่วนตารางรายงานและตัวกรอง PO No -->
+    <div class="report-section">
+        <div class="report-header">
+            <h3 class="report-title">> รายงานรายการใบสั่งทั้งหมด (ORDERS REPORT)</h3>
+            <button class="btn btn-sm btn-outline-success font-monospace" onclick="fetchOrdersReport()">
+                <i class="fa-solid fa-rotate"></i> รีเฟรช
+            </button>
+        </div>
+
+        <div class="filter-box">
+            <label for="filter_po"><i class="fa-solid fa-filter me-1 text-info"></i> ตัวกรอง PO No (Smart Dropdown เรียงจากน้อยไปมาก จำค่าอัตโนมัติ)</label>
+            <select id="filter_po" class="form-select form-select-stock" onchange="filterTableLocally()">
+                <option value="">-- ทั้งหมดทุก PO No --</option>
+            </select>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order No</th>
+                        <th>PO No</th>
+                        <th>ID Work</th>
+                        <th class="text-end">Quantity</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th class="text-center"><i class="fa-solid fa-paw text-success me-1"></i> จัดการ (PIN: 112233)</th>
+                    </tr>
+                </thead>
+                <tbody id="reportTableBody">
+                    <tr><td colspan="7" class="text-center text-muted">กำลังโหลดข้อมูล...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="terminal-footer">
+        SUPABASE SECURE TERMINAL // ONLINE
+    </div>
+</div>
+
+<script>
+    const SUPABASE_URL = "https://siiiifesdjuunwmwozfb.supabase.co/rest/v1";
+    const SUPABASE_KEY = "sb_publishable_ohToE8Z_Fzo87uBtzdPDIg_cqHCi3HT";
+    
+    const headers = {
+        "apikey": SUPABASE_KEY,
+        "Authorization": "Bearer " + SUPABASE_KEY,
+        "Content-Type": "application/json",
+        "Prefer": "return=minimal"
+    };
+
+    let allOrdersData = [];
+    let workItemsMap = {};
+
+    window.onload = async function() {
+        document.getElementById('start_date').valueAsDate = new Date();
+        document.getElementById('end_date').valueAsDate = new Date();
+
+        await loadWorkItems();
+        await fetchOrdersReport();
+    };
+
+    async function loadWorkItems() {
+        try {
+            // ดึงข้อมูลรหัสชิ้นงาน เรียงลำดับจากน้อยไปมากตาม id_work
+            const res = await fetch(`${SUPABASE_URL}/work_items?select=id_work,work_code&order=id_work.asc`, { headers });
+            if (!res.ok) throw new Error("ไม่สามารถดึงข้อมูลรหัสชิ้นงานได้");
+            
+            const workItems = await res.json();
+            const selectWork = document.getElementById('id_work');
+            selectWork.innerHTML = '<option value="">-- เลือกรหัสชิ้นงาน --</option>';
+            
+            workItems.forEach(w => {
+                workItemsMap[w.id_work] = w.work_code;
+                let opt = document.createElement('option');
+                opt.value = w.id_work;
+                opt.textContent = `${w.work_code} (ID: ${w.id_work})`;
+                selectWork.appendChild(opt);
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function fetchOrdersReport() {
+        try {
+            // ดึงข้อมูลรายการ orders โดยเรียงลำดับ order_no จากน้อยไปมาก (order_no.asc)
+            const res = await fetch(`${SUPABASE_URL}/orders?select=*&order=order_no.asc`, { headers });
+            if (!res.ok) throw new Error("ไม่สามารถดึงข้อมูลรายงานได้");
+            
+            allOrdersData = await res.json();
+            
+            // อัปเดตตัวเลือกใน Smart Dropdown ของตัวกรอง PO No (เรียงจากน้อยไปมาก)
+            updatePoFilterDropdown();
+            filterTableLocally();
+        } catch (error) {
+            console.error(error);
+            document.getElementById('reportTableBody').innerHTML = '<tr><td colspan="7" class="text-center text-danger">เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>';
+        }
+    }
+
+    function updatePoFilterDropdown() {
+        const filterSelect = document.getElementById('filter_po');
+        const savedPoFilter = localStorage.getItem('new_order_filter_po') || '';
+        
+        // รวบรวม PO No ที่ไม่ซ้ำกัน และเรียงลำดับจากน้อยไปมาก (Ascending) พร้อมรองรับตัวเลข/ตัวอักษรไทย
+        const uniquePoList = [...new Set(allOrdersData.map(item => item.po_no).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'th', {numeric: true}));
+        
+        filterSelect.innerHTML = '<option value="">-- ทั้งหมดทุก PO No --</option>';
+        uniquePoList.forEach(po => {
+            let opt = document.createElement('option');
+            opt.value = po;
+            opt.textContent = po;
+            filterSelect.appendChild(opt);
+        });
+
+        // กำหนดค่าเริ่มต้นจากที่จำไว้ใน localStorage เมื่อเปิดแอพครั้งแรก
+        if (savedPoFilter && uniquePoList.includes(savedPoFilter)) {
+            filterSelect.value = savedPoFilter;
+        } else if (uniquePoList.length > 0) {
+            filterSelect.value = uniquePoList[0];
+            localStorage.setItem('new_order_filter_po', uniquePoList[0]);
+        } else {
+            filterSelect.value = '';
+        }
+    }
+
+    function filterTableLocally() {
+        const filterSelect = document.getElementById('filter_po');
+        const filterVal = filterSelect.value.trim();
+
+        // บันทึกค่าลงใน localStorage เพื่อจำค่าไว้เมื่อเปิดแอพครั้งใหม่
+        localStorage.setItem('new_order_filter_po', filterVal);
+
+        const tbody = document.getElementById('reportTableBody');
+        tbody.innerHTML = '';
+
+        let filtered = allOrdersData;
+        if (filterVal !== "") {
+            filtered = allOrdersData.filter(item => item.po_no && item.po_no === filterVal);
+        }
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">ไม่พบข้อมูลใบสั่งที่ตรงกับเงื่อนไข</td></tr>';
+            return;
+        }
+
+        filtered.forEach(order => {
+            let workDisplay = workItemsMap[order.id_work] ? `${workItemsMap[order.id_work]} (ID: ${order.id_work})` : order.id_work;
+            let tr = document.createElement('tr');
+            // ตัดคอลัมน์ id_order ออก ไม่แสดงผลในตาราง และเรียงลำดับ order_no จากน้อยไปมาก
+            tr.innerHTML = `
+                <td class="fw-bold text-success">${order.order_no || '-'}</td>
+                <td>${order.po_no || '-'}</td>
+                <td>${workDisplay}</td>
+                <td class="text-end fw-bold">${order.quantity ? parseInt(order.quantity).toLocaleString() : 0}</td>
+                <td>${order.start_date || '-'}</td>
+                <td>${order.end_date || '-'}</td>
+                <td class="text-center">
+                    <button class="action-btn btn-edit-action" onclick="verifyPinAndEdit(${order.id_order})">Edit</button>
+                    <button class="action-btn btn-del-action" onclick="verifyPinAndDelete(${order.id_order})">Del</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // ฟังก์ชันถามรหัส 112233 ก่อน Edit
+    async function verifyPinAndEdit(id_order) {
+        const { value: pin } = await Swal.fire({
+            title: '🔒 ยืนยันรหัสผ่าน',
+            text: 'กรุณากรอกรหัสผ่านเพื่อแก้ไขข้อมูล (รหัส: 112233)',
+            input: 'password',
+            inputAttributes: { autocapitalize: 'off', autocorrect: 'off' },
+            showCancelButton: true,
+            confirmButtonText: 'ยืนยัน',
+            cancelButtonText: 'ยกเลิก',
+            background: '#030806',
+            color: '#00ff88',
+            confirmButtonColor: '#00ff88',
+            cancelButtonColor: '#ff3366'
+        });
+
+        if (pin === '112233') {
+            const orderObj = allOrdersData.find(o => o.id_order === id_order);
+            if (orderObj) {
+                document.getElementById('edit_id_order').value = orderObj.id_order;
+                document.getElementById('order_no').value = orderObj.order_no || '';
+                document.getElementById('po_no').value = orderObj.po_no || '';
+                document.getElementById('id_work').value = orderObj.id_work || '';
+                document.getElementById('quantity').value = orderObj.quantity || '';
+                document.getElementById('start_date').value = orderObj.start_date || '';
+                document.getElementById('end_date').value = orderObj.end_date || '';
+
+                document.getElementById('submitBtn').innerHTML = '<i class="fa-solid fa-pen-to-square me-2"></i> บันทึกการแก้ไข (UPDATE)';
+                document.getElementById('cancelEditBtn').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        } else if (pin !== undefined) {
+            Swal.fire({ icon: 'error', title: 'รหัสผ่านไม่ถูกต้อง', text: 'คุณไม่มีสิทธิ์แก้ไขข้อมูลนี้', background: '#030806', color: '#ff3366' });
+        }
+    }
+
+    function cancelEditMode() {
+        document.getElementById('orderForm').reset();
+        document.getElementById('edit_id_order').value = '';
+        document.getElementById('start_date').valueAsDate = new Date();
+        document.getElementById('end_date').valueAsDate = new Date();
+
+        document.getElementById('submitBtn').innerHTML = '<i class="fa-solid fa-floppy-disk me-2"></i> บันทึกใบสั่งใหม่ (SAVE)';
+        document.getElementById('cancelEditBtn').style.display = 'none';
+    }
+
+    // ฟังก์ชันถามรหัส 112233 ก่อน Del
+    async function verifyPinAndDelete(id_order) {
+        const { value: pin } = await Swal.fire({
+            title: '🔒 ยืนยันรหัสผ่านเพื่อลบ',
+            text: 'กรุณากรอกรหัสผ่านเพื่อลบข้อมูล (รหัส: 112233)',
+            input: 'password',
+            inputAttributes: { autocapitalize: 'off', autocorrect: 'off' },
+            showCancelButton: true,
+            confirmButtonText: 'ลบข้อมูล',
+            cancelButtonText: 'ยกเลิก',
+            background: '#030806',
+            color: '#ff3366',
+            confirmButtonColor: '#ff3366',
+            cancelButtonColor: '#113a24'
+        });
+
+        if (pin === '112233') {
+            try {
+                const res = await fetch(`${SUPABASE_URL}/orders?id_order=eq.${id_order}`, {
+                    method: 'DELETE',
+                    headers: headers
+                });
+
+                if (!res.ok) throw new Error('ลบข้อมูลไม่สำเร็จ');
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'DELETED',
+                    text: 'ลบรายการใบสั่งเรียบร้อยแล้ว',
+                    background: '#030806',
+                    color: '#00ff88',
+                    confirmButtonColor: '#00ff88',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+
+                await fetchOrdersReport();
+            } catch (error) {
+                console.error(error);
+                Swal.fire({ icon: 'error', title: 'FAILED', text: 'เกิดข้อผิดพลาดในการลบข้อมูล', background: '#030806', color: '#ff3366' });
+            }
+        } else if (pin !== undefined) {
+            Swal.fire({ icon: 'error', title: 'รหัสผ่านไม่ถูกต้อง', text: 'คุณไม่มีสิทธิ์ลบข้อมูลนี้', background: '#030806', color: '#ff3366' });
+        }
+    }
+
+    async function saveOrder(e) {
+        e.preventDefault();
+
+        const editId = document.getElementById('edit_id_order').value;
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> กำลังบันทึก...';
+
+        const payload = {
+            order_no: document.getElementById('order_no').value.trim(),
+            po_no: document.getElementById('po_no').value.trim(),
+            id_work: parseInt(document.getElementById('id_work').value),
+            quantity: parseInt(document.getElementById('quantity').value),
+            start_date: document.getElementById('start_date').value,
+            end_date: document.getElementById('end_date').value
+        };
+
+        try {
+            let res;
+            if (editId) {
+                res = await fetch(`${SUPABASE_URL}/orders?id_order=eq.${editId}`, {
+                    method: 'PATCH',
+                    headers: headers,
+                    body: JSON.stringify(payload)
+                });
+            } else {
+                res = await fetch(`${SUPABASE_URL}/orders`, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(payload)
+                });
+            }
+
+            if (!res.ok) throw new Error('บันทึกข้อมูลไม่สำเร็จ');
+
+            await Swal.fire({
+                icon: 'success',
+                title: 'SUCCESS',
+                text: editId ? 'อัปเดตข้อมูลใบสั่งสำเร็จเรียบร้อย' : 'บันทึกใบสั่งใหม่ลงตาราง orders สำเร็จเรียบร้อย',
+                background: '#030806',
+                color: '#00ff88',
+                confirmButtonColor: '#00ff88'
+            });
+
+            cancelEditMode();
+            await fetchOrdersReport();
+
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                icon: 'error',
+                title: 'FAILED',
+                text: 'เกิดข้อผิดพลาดในการบันทึกข้อมูล',
+                background: '#030806',
+                color: '#ff3366',
+                confirmButtonColor: '#ff3366'
+            });
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = editId ? '<i class="fa-solid fa-pen-to-square me-2"></i> บันทึกการแก้ไข (UPDATE)' : '<i class="fa-solid fa-floppy-disk me-2"></i> บันทึกใบสั่งใหม่ (SAVE)';
+        }
+    }
+</script>
+
+</body>
+</html>
