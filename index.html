@@ -515,7 +515,7 @@
         }
 
         filtered.forEach(order => {
-            let workDisplay = workItemsMap[order.id_work] ? `${workItemsMap[order.id_work]} (ID: ${order.id_work})` : order.id_work;
+            let workDisplay = workItemsMap[order.id_work] ? workItemsMap[order.id_work] : order.id_work;
             let tr = document.createElement('tr');
             tr.innerHTML = `
                 <td class="fw-bold text-success">${order.order_no || '-'}</td>
