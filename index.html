@@ -437,7 +437,8 @@
 
     async function loadWorkItems() {
         try {
-            const res = await fetch(`${SUPABASE_URL}/work_items?select=id_work,work_code&order=id_work.asc`, { headers });
+            // เปลี่ยนการเรียงลำดับเป็นเรียงตามชื่อชิ้นงาน (work_code.asc) จากน้อยไปมาก
+            const res = await fetch(`${SUPABASE_URL}/work_items?select=id_work,work_code&order=work_code.asc`, { headers });
             if (!res.ok) throw new Error("ไม่สามารถดึงข้อมูลรหัสชิ้นงานได้");
             
             const workItems = await res.json();
@@ -448,7 +449,8 @@
                 workItemsMap[w.id_work] = w.work_code;
                 let opt = document.createElement('option');
                 opt.value = w.id_work;
-                opt.textContent = `${w.work_code} (ID: ${w.id_work})`;
+                // แสดงแค่รหัสชิ้นงาน ไม่ต้องมีวงเล็บ ID
+                opt.textContent = w.work_code; 
                 selectWork.appendChild(opt);
             });
         } catch (error) {
