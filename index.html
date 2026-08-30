@@ -16,16 +16,17 @@
             --bg-dark: #030806;
             --panel-bg: rgba(7, 24, 16, 0.95);
             --border-neon: #00ff88;
-            --border-dim: #17633c; /* ปรับให้สว่างขึ้นเพื่อเน้นขอบ */
-            --text-main: #f0fdf7; /* ขาวอมเขียวนิดๆ ให้อ่านง่าย */
-            --text-label: #a7e0c4; /* สี Label ให้สว่างและตัดกับพื้นหลัง */
+            --border-dim: #17633c; 
+            --text-main: #f0fdf7; 
+            --text-label: #a7e0c4; 
             --text-muted: #8ca89a;
             --neon-green: #00ff88;
             --neon-glow: rgba(0, 255, 136, 0.4);
             --neon-yellow: #f5a623;
             --neon-red: #ff3366;
-            --input-bg: #112a1e; /* ทำให้ช่องกรอกโดดเด่นจากพื้นหลัง */
-            --input-text: #ffffff; /* ตัวอักษรในช่องกรอกเป็นสีขาวชัดเจน */
+            --neon-blue: #00e5ff;
+            --input-bg: #112a1e; 
+            --input-text: #ffffff; 
             --table-bg: #071910;
         }
 
@@ -44,7 +45,6 @@
             -webkit-text-size-adjust: 100%;
         }
 
-        /* ภาพพื้นหลังเครื่องครัวสแตนเลสจากัวร์ พร้อมฟิลเตอร์เขียวทึมไฮเทค */
         body::before {
             content: "";
             position: fixed;
@@ -62,23 +62,52 @@
             background: var(--panel-bg);
             border: 2px solid var(--border-neon);
             border-radius: 20px;
-            padding: 25px; /* เพิ่ม padding เล็กน้อย */
+            padding: 25px; 
             box-shadow: 0 0 35px var(--neon-glow), inset 0 0 20px rgba(0, 255, 136, 0.1);
             backdrop-filter: blur(10px);
             box-sizing: border-box;
             margin: 20px 0;
+            position: relative;
+        }
+
+        /* ปุ่ม Home ที่เพิ่มใหม่ */
+        .home-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 229, 255, 0.1);
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .home-btn:hover {
+            background: var(--neon-blue);
+            color: var(--bg-dark);
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
         }
 
         /* หัวฟอร์ม: โลโก้หัวเสือโลหะไฮเทค */
         .app-header {
             text-align: center;
-            border-bottom: 2px dashed var(--border-dim); /* เส้นแบ่งชัดขึ้น */
+            border-bottom: 2px dashed var(--border-dim); 
             padding-bottom: 15px;
             margin-bottom: 25px;
+            position: relative;
+            padding-top: 10px;
         }
 
         .jaguar-emblem {
-            width: 85px; /* ใหญ่ขึ้นนิดนึง */
+            width: 85px; 
             height: 85px;
             margin: 0 auto 15px auto;
             background: radial-gradient(circle, #113a24 0%, #030806 100%);
@@ -92,7 +121,7 @@
         }
 
         .jaguar-emblem i {
-            font-size: 42px; /* ขยายไอคอน */
+            font-size: 42px; 
             color: var(--neon-green);
             text-shadow: 0 0 10px var(--neon-green);
         }
@@ -103,7 +132,7 @@
         }
 
         .app-title {
-            font-size: 1.4rem; /* ใหญ่ขึ้น 15% */
+            font-size: 1.4rem; 
             font-weight: bold;
             color: var(--neon-green);
             letter-spacing: 2px;
@@ -112,7 +141,7 @@
         }
 
         .app-subtitle {
-            font-size: 0.85rem; /* ใหญ่ขึ้น 15% */
+            font-size: 0.85rem; 
             color: var(--text-label);
             letter-spacing: 1px;
             margin-top: 6px;
@@ -125,9 +154,9 @@
         label {
             display: block;
             margin-bottom: 8px;
-            font-size: 1rem; /* ใหญ่ขึ้น 15% ให้อ่านง่าย */
+            font-size: 1rem; 
             font-weight: bold;
-            color: var(--text-label); /* เปลี่ยนสีให้สว่าง */
+            color: var(--text-label); 
             letter-spacing: 1px;
         }
 
@@ -136,7 +165,7 @@
             border: 1px solid var(--border-dim);
             color: var(--input-text);
             border-radius: 8px;
-            font-size: 1.1rem; /* ใหญ่ขึ้น 15% */
+            font-size: 1.1rem; 
             padding: 12px 15px;
             font-family: 'Courier New', Courier, monospace;
             width: 100%;
@@ -144,7 +173,7 @@
         }
         
         .form-control-stock::placeholder {
-            color: #638573; /* สี Placeholder ให้มองเห็นแต่ไม่แย่งซีน */
+            color: #638573; 
             opacity: 1;
         }
 
@@ -152,7 +181,7 @@
             background-color: var(--bg-dark);
             color: #fff;
             border-color: var(--neon-green);
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.4); /* เพิ่มแสงตอนโฟกัส */
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.4); 
             outline: none;
         }
 
@@ -167,11 +196,11 @@
             background: linear-gradient(145deg, #071910, #040e09);
             border: 2px solid var(--neon-green);
             color: var(--neon-green);
-            padding: 16px; /* ปุ่มใหญ่ขึ้น */
+            padding: 16px; 
             border-radius: 10px;
             width: 100%;
             font-weight: bold;
-            font-size: 1.15rem; /* ตัวหนังสือในปุ่มใหญ่ขึ้น */
+            font-size: 1.15rem; 
             letter-spacing: 1.5px;
             transition: all 0.25s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
@@ -233,7 +262,7 @@
 
         .report-title {
             color: var(--neon-green);
-            font-size: 1.2rem; /* ใหญ่ขึ้น */
+            font-size: 1.2rem; 
             font-weight: bold;
             letter-spacing: 1px;
             margin: 0;
@@ -259,12 +288,12 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 1rem; /* ฟอนต์ตารางใหญ่ขึ้น */
+            font-size: 1rem; 
             white-space: nowrap;
         }
 
         th, td {
-            padding: 14px 10px; /* ช่องไฟตารางกว้างขึ้น */
+            padding: 14px 10px; 
             text-align: left;
             border-bottom: 1px solid var(--border-dim);
         }
@@ -272,7 +301,7 @@
         th {
             color: var(--neon-green);
             font-weight: bold;
-            background-color: rgba(0, 255, 136, 0.05); /* ไฮไลท์หัวตารางนิดนึง */
+            background-color: rgba(0, 255, 136, 0.05); 
         }
 
         td {
@@ -290,7 +319,7 @@
 
         .action-btn {
             padding: 6px 12px;
-            font-size: 0.9rem; /* ใหญ่ขึ้น */
+            font-size: 0.9rem; 
             font-weight: bold;
             border-radius: 4px;
             font-family: 'Courier New', Courier, monospace;
@@ -305,17 +334,32 @@
         .terminal-footer {
             text-align: center;
             margin-top: 25px;
-            font-size: 0.8rem; /* ใหญ่ขึ้น */
+            font-size: 0.8rem; 
             color: var(--text-muted);
             letter-spacing: 1px;
             border-top: 1px solid var(--border-dim);
             padding-top: 15px;
+        }
+
+        /* สำหรับมือถือ ปรับปุ่มให้อยู่บรรทัดใหม่ถัดจาก Header */
+        @media (max-width: 576px) {
+            .home-btn {
+                position: static;
+                margin-bottom: 15px;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
 
 <div class="main-container">
+    
+    <!-- ปุ่ม Home App -->
+    <a href="https://paiboon-creater.github.io/Data_Information_Jaguar_productions/" class="home-btn">
+        <i class="fa-solid fa-house"></i> Home App
+    </a>
+
     <!-- หัวฟอร์ม: โลโก้หัวเสือ (fa-paw) -->
     <div class="app-header">
         <div class="jaguar-emblem">
